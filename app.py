@@ -345,7 +345,7 @@ with st.sidebar:
     <hr style='border-color:#30363d;margin:12px 0'>
     """, unsafe_allow_html=True)
 
-    page = st.radio("", ["🏠  Home","🔬  Data Explorer","🤖  Model Lab","🎯  Predict"])
+    page = st.radio("Navigation", ["🏠  Home","🔬  Data Explorer","🤖  Model Lab","🎯  Predict"], label_visibility="collapsed")
 
     if 'accuracies' in st.session_state:
         st.markdown("<hr style='border-color:#30363d'>", unsafe_allow_html=True)
@@ -387,7 +387,7 @@ def home_page():
     c4.markdown(metric_card(f"{n_pos/len(data)*100:.1f}", "Prevalence", "%"), unsafe_allow_html=True)
 
     st.markdown("<div class='section-title'>📋 Dataset Preview</div>", unsafe_allow_html=True)
-    st.dataframe(data.head(10), use_container_width=True)
+    st.dataframe(data.head(10), width='stretch')
 
     col_a, col_b = st.columns(2)
     with col_a:
@@ -405,7 +405,7 @@ def home_page():
         st.pyplot(fig); plt.clf()
     with col_b:
         st.markdown("<div class='section-title'>📈 Feature Statistics</div>", unsafe_allow_html=True)
-        st.dataframe(proc.describe().T.round(2), use_container_width=True)
+        st.dataframe(proc.describe().T.round(2), width='stretch')
 
     st.markdown("<div class='section-title'>💾 Export</div>", unsafe_allow_html=True)
     if st.button("⬇️  Download Cleaned Dataset"):
@@ -443,7 +443,7 @@ def data_exploration_page():
             st.code(buf.getvalue())
     with col_b:
         if st.checkbox("Descriptive statistics"):
-            st.dataframe(data.describe().round(2), use_container_width=True)
+            st.dataframe(data.describe().round(2), width='stretch')
 
     st.markdown("<div class='section-title'>📊 Feature Distribution</div>", unsafe_allow_html=True)
     features = [c for c in data.columns if c != 'Outcome']
@@ -522,7 +522,7 @@ def model_training_page():
         X_train, y_train = SMOTE(random_state=rs).fit_resample(X_train, y_train)
         st.success(f"SMOTE applied — {pd.Series(y_train).value_counts().to_dict()}")
 
-    if st.button("🚀  Train All Models", use_container_width=True):
+    if st.button("🚀  Train All Models", width='stretch'):
         models    = build_models(rs)
         results   = {}
         accs      = {}
@@ -566,7 +566,7 @@ def model_training_page():
             n: {"Mean": f"{s.mean():.2f}%", "Std": f"±{s.std():.2f}%",
                 "Min":  f"{s.min():.2f}%",  "Max": f"{s.max():.2f}%"}
             for n, s in cv_scores.items()}).T
-        st.dataframe(cv_df, use_container_width=True)
+        st.dataframe(cv_df, width='stretch')
 
         # ── ROC ──
         st.markdown("<div class='section-title'>📈 ROC Curves</div>", unsafe_allow_html=True)
@@ -582,7 +582,7 @@ def model_training_page():
                 with c1:
                     st.pyplot(plot_confusion(y_test, preds, name)); plt.clf()
                 with c2:
-                    st.dataframe(get_report_df(y_test, preds), use_container_width=True)
+                    st.dataframe(get_report_df(y_test, preds), width='stretch')
                     fig_imp = plot_importance(model, list(X.columns), "Feature Importance")
                     if fig_imp:
                         st.pyplot(fig_imp); plt.clf()
@@ -621,7 +621,7 @@ def prediction_page():
         with c4:
             dpf         = st.number_input("Diabetes Pedigree Fn", 0.0, 3.0, 0.5, step=0.01)
             age         = st.number_input("Age (years)", 0, 120, 30)
-        submitted = st.form_submit_button("🔍  Analyse Risk", use_container_width=True)
+        submitted = st.form_submit_button("🔍  Analyse Risk", width='stretch')
 
     if submitted:
         raw_df = pd.DataFrame([[pregnancies, glucose, bp, skin, insulin, bmi, dpf, age]],
